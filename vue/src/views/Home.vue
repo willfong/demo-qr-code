@@ -1,39 +1,27 @@
 <template>
   <div class="home">
-    <MessageNew v-if="jwt" />
-    <Message v-for="message in messages" v-bind:key="message.id" v-bind:message="message" />
+    <img src="/static/lookup.png" />
+    <h1 class="title">Report of Scans</h1>
+    <ul>
+      <li v-for="l in report" v-bind:key="l.id">{{l.id}}: {{l.count}}</li>
+    </ul>
   </div>
 </template>
 
 <script>
-import MessageNew from "@/components/messageNew";
-import Message from "@/components/message";
-import { mapGetters } from "vuex";
+import axios from "axios";
 
 export default {
   name: "home",
   data() {
     return {
-      todo: ""
-    };
-  },
-  computed: {
-    ...mapGetters([
-      "isConnected",
-      "name",
-      "email",
-      "picture",
-      "personalID",
-      "jwt",
-      "messages",
-      "userCache",
-    ])
-  },
-  components: {
-    MessageNew, Message
+      report: []
+    }
   },
   mounted() {
-    this.$store.dispatch("messageGet");
-  },
+    axios.get("/report", {params: {id: this.id}}).then(response => {
+      this.report = response.data;
+    });
+  }
 };
 </script>
