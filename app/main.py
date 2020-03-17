@@ -11,18 +11,19 @@ app = FastAPI()
 # files from S3 directly.
 app.mount("/static", StaticFiles(directory="/app/app/static"), name="static")
 
-@app.get("/.*", include_in_schema=False)
-@statsd.statsd_root_stats
-def root():
-    with open('/app/app/static/index.html') as f:
-        return HTMLResponse(content=f.read(), status_code=200)
-
 
 @app.get("/lookup")
 @statsd.statsd_root_stats
 def lookup(x_forwarded_for: str = Header(None)):
     util.logger.warning(f"IP Address: {x_forwarded_for}")
     return {"msg": x_forwarded_for}
+
+
+@app.get("/.*", include_in_schema=False)
+@statsd.statsd_root_stats
+def root():
+    with open('/app/app/static/index.html') as f:
+        return HTMLResponse(content=f.read(), status_code=200)
 
 
 @app.get("/log-output-test")
